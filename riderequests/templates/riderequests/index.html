@@ -1,0 +1,9 @@
+{% if requests %}
+	<ul>
+	{% for req in requests %}
+	<li>{{req}}</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p> no requests! </p>
+{% endif %}
