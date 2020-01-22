@@ -28,7 +28,7 @@ def avail_for_share(request):
 
         context = {
                 'requests' : matches,
-                'invalid' : False
+                'invalid' : prev_invalid_post
                 }
 
         template = loader.get_template('riderequests/join_requests.html')
@@ -45,7 +45,7 @@ def avail_for_share(request):
     elif request.method == "POST":
         if request.POST['choice']:
             req = Request.objects.get(pk=request.POST['choice'])
-            req.n_passengers += 1
+            req.n_passengers += request.GET['n_passengers']
             req.other_user_passengers+="apassenger"
             req.save()
             return HttpResponseRedirect(reverse('riderequests:index'))
