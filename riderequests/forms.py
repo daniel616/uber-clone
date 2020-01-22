@@ -41,3 +41,12 @@ class RequestForm(ModelForm):
                 'arrive_time',
                 'n_passengers',
                 'allow_strangers']
+
+class JoinRequestForm(ModelForm):
+    class Meta:
+        model = Request
+        fields = ['requester',
+                'src_loc',
+                'dst_loc',
+                'n_passengers']
+
