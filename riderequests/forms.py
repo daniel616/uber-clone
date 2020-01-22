@@ -1,7 +1,9 @@
-from django.db import models
-import copy
-from datetime import datetime
+from django.forms import ModelForm
 
+from .models import Request
+
+
+"""
 class Request(models.Model):
     OPEN = 'O'
     CONFIRMED = 'C'
@@ -25,17 +27,17 @@ class Request(models.Model):
     allow_strangers = models.BooleanField(default = False)
 
     arrive_time = models.DateTimeField('expected arrival')
-    request_time = models.DateTimeField('request sent time',default = datetime.now)
+    request_time = models.DateTimeField('request sent time')
     src_loc = models.CharField(max_length = 500)
     dst_loc = models.CharField(max_length = 500)
+"""
 
-    def __str__(self):
-        tmp = copy.copy(self.__dict__)
-        del tmp['_state']
-        return str(tmp)
-# Create your models here.
-
-
-class Vehicle(models.Model):
-    owner = models.CharField(max_length = 50)
-    #TODO: fix me
+class RequestForm(ModelForm):
+    class Meta:
+        model = Request
+        fields = ['requester', 
+                'src_loc', 
+                'dst_loc', 
+                'arrive_time',
+                'n_passengers',
+                'allow_strangers']

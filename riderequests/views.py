@@ -4,6 +4,8 @@ from django.urls import reverse
 
 from .models import Request
 
+from .forms import RequestForm
+
 from django.template import loader
 from datetime import datetime
 
@@ -12,9 +14,31 @@ def index(request):
     context = {
             'requests' : all_requests
         }
-    template = loader.get_template('riderequests/index.html')
+    template = loader.get_template('riderequests/show_requests.html')
 
     return HttpResponse(template.render(context,request))
+
+def avail_for_share(request):
+    invalid = False
+    if request.method == "POST":
+        req = Request.objects.get(pk=request.POST['choice'])
+        req.n_passengers += 1
+        req.other_user_passengers+="apassenger"
+        req.save()
+        return HttpResponseRedirect(reverse('riderequests:index'))
+    else:
+        invalid = True
+
+    avail = Request.objects.filter(allow_strangers=True)
+    context = {
+            'requests' : avail,
+            'invalid' : invalid
+            }
+
+    template = loader.get_template('riderequests/join_requests.html')
+
+    return HttpResponse(template.render(context,request))
+
 
 def newrequest(request):
     fields = request.POST
@@ -24,7 +48,24 @@ def newrequest(request):
     return HttpResponseRedirect(reverse('riderequests:index'))
 
 
-def makerequest(request):
-    template = loader.get_template('riderequests/makerequest.html')
-    return HttpResponse(template.render({},request))
+#http://blog.appliedinformaticsinc.com/using-django-modelform-a-quick-guide/
+def specifyrequest(request):
+    if request.method == "POST":
+        form = RequestForm(request.POST)
+        if form.is_valid():
+            n_req = form.save(commit = False)
+            n_req.request_time = datetime.now()
+            n_req.save()
+            return HttpResponseRedirect(reverse('riderequests:index'))
+        else:
+            import pdb; pdb.set_trace()
+            form = RequestForm()
+            template = loader.get_template('riderequests/specifyrequest.html')
+            return HttpResponse(template.render({'form':form,'invalid':True},request))
+    
+    else:
+        form = RequestForm()
+
+        template = loader.get_template('riderequests/specifyrequest.html')
+        return HttpResponse(template.render({'form':form},request))
 # Create your views here.
