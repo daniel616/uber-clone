@@ -25,13 +25,13 @@ SECRET_KEY = '@!**(%to3at0q3l7+jn3&$9g2xdrq)&usia-b5zga3xc$$^x@9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vcm-12339.vm.duke.edu']
+ALLOWED_HOSTS = ['vcm-12339.vm.duke.edu','vcm-12370.vm.duke.edu']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'polls.apps.PollsConfig',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'riderequests.apps.RiderequestsConfig',
+    'account.apps.AccountConfig',
+    'ride.apps.RideConfig',
 ]
 
 MIDDLEWARE = [
@@ -119,4 +121,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
