@@ -22,10 +22,13 @@ def index(request):
 def edit_requests(http_request):
     pass
 
+def get_user(request):
+    return request.user.username
 def my_dashboard(request):
-    owned_requests = Request.objects.filter(requester__exact = 'default_user')
-    provided_rides = Request.objects.filter(driver__exact = 'default_user')
-    shared_requests = Request.objects.filter(other_user_passengers__contains = 'default_user')
+    user = get_user(request)
+    owned_requests = Request.objects.filter(requester__exact = user)
+    provided_rides = Request.objects.filter(driver__exact = user)
+    shared_requests = Request.objects.filter(other_user_passengers__contains = user)
     ctx = {'owned_requests':owned_requests, 'provided_rides': provided_rides,
             'shared_requests':shared_requests}
     template = loader.get_template('riderequests/my_dashboard.html')
@@ -132,6 +135,8 @@ def specifyrequest(request):
         form = RequestForm(request.POST)
         if form.is_valid():
             n_req = form.save(commit = False)
+            
+            n_req.requester = get_user(request)
             n_req.request_time = datetime.now()
             n_req.save()
             return HttpResponseRedirect(reverse('riderequests:index'))
