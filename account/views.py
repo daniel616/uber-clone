@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+
 from django.contrib import messages,auth
 
 
@@ -13,8 +14,7 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             messages.success(request, 'Login successful!')
-            print("success")
-            return redirect('dashBoard')
+            return redirect('dashboard')
         else:
             messages.error(request, 'Invalid credentials')
             return redirect('login')
@@ -56,8 +56,7 @@ def register(request):
 def logout(request):
     if request.method == 'POST':
         auth.logout(request)
-        messages.success(request, 'Logout successful!')
-        return redirect('index')
+        return redirect('/rides')
 
-def dashBoard(request):
-    return HttpResponse("you successfullly loggedin")
+def dashboard(request):
+    return render(request,'account/dashboard.html')
