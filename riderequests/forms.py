@@ -8,7 +8,7 @@ from django.utils import timezone
 class RequestForm(ModelForm):
     class Meta:
         model = Request
-        fields = ['requester', 
+        fields = [
                 'src_loc', 
                 'dst_loc', 
                 'arrive_time',
@@ -18,7 +18,7 @@ class RequestForm(ModelForm):
 class JoinRequestForm(ModelForm):
     class Meta:
         model = Request
-        fields = ['requester',
+        fields = [
                 'src_loc',
                 'dst_loc',
                 'n_passengers']
