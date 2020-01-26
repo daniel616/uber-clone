@@ -1,0 +1,47 @@
+{% include "./header_links.html" %}
+<!--owned_requests provided_rides shared_requests-->
+
+<h2>Owned requests</h2>
+{% if owned_requests %}
+	
+	<ul>
+	{% for req in owned_requests %}
+		{% if req.status == 'O' and req.other_user_passengers == '' %}
+		<button id = "{{ req.id }}" formaction="/riderequests/edit_request/"/>Edit</button>
+		{% endif %}
+
+		<li>{{req}}</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p> You own no requests! </p>
+{% endif %}
+
+<h2>Shared requests</h2>
+
+{% if shared_requests %}
+	<ul>
+	{% for req in shared_requests %}
+		<li>{{req}}</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p> You share no requests! </p>
+{% endif %}
+
+<h2>Provided rides</h2>
+
+{% if provided_rides %}
+	<ul>
+	{% for req in provided_rides %}
+		<li>{{req}}</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p> You are not giving any rides </p>
+{% endif %}
+
+
+
+
+

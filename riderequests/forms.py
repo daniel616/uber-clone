@@ -1,36 +1,9 @@
-from django.forms import ModelForm
-
+from django.forms import ModelForm, Form
+from django import forms
 from .models import Request
 
-
-"""
-class Request(models.Model):
-    OPEN = 'O'
-    CONFIRMED = 'C'
-    COMPLETED = 'F'
-    STATUSES = (
-            (OPEN, 'open'),
-            (CONFIRMED, 'confirmed'),
-            (COMPLETED, 'completed'),
-    )
-
-    requester = models.CharField(max_length=50)
-    driver = models.CharField(max_length = 50, default = '')
-    other_user_passengers =  models.CharField(max_length = 500, default = '')
-    #TODO: fix these, should be linked to accounts somehow.
-    status = models.CharField(
-            max_length=1,
-            choices = STATUSES,
-            default = OPEN)
-
-    n_passengers = models.IntegerField(default = 1)
-    allow_strangers = models.BooleanField(default = False)
-
-    arrive_time = models.DateTimeField('expected arrival')
-    request_time = models.DateTimeField('request sent time')
-    src_loc = models.CharField(max_length = 500)
-    dst_loc = models.CharField(max_length = 500)
-"""
+from datetime import datetime, timedelta
+from django.utils import timezone
 
 class RequestForm(ModelForm):
     class Meta:
@@ -49,4 +22,18 @@ class JoinRequestForm(ModelForm):
                 'src_loc',
                 'dst_loc',
                 'n_passengers']
+
+
+   
+def hour_from_now():
+    d = timedelta(hours = 1)
+    return timezone.now() + d
+
+
+class DriverSearchRequestForm(Form):
+    src_loc = forms.CharField(label = 'src_loc', max_length=100, initial = '', required = False)
+    dst_loc = forms.CharField(label = 'dst_loc', max_length =100, initial = '', required = False)
+    min_arrive_time = forms.DateTimeField(label = 'minimum arrive time', initial = timezone.now, required = False)
+    max_arrive_time = forms.DateTimeField(label = 'max arrivetime', initial = hour_from_now, required = False)
+
 
