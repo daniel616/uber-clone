@@ -35,7 +35,14 @@ class Request(models.Model):
         return str(tmp)
 # Create your models here.
 
-
 class Vehicle(models.Model):
-    owner = models.CharField(max_length = 50)
-    #TODO: fix me
+    vehicle_type_registered = models.CharField(max_length=200, blank=True)
+    license_plate_number = models.CharField(max_length=200, blank=True)
+    max_capacity = models.IntegerField(default=4, blank=True)
+   # driver = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    special_requests_driver = models.CharField(max_length=200, blank=True)
+    def	__str__(self):
+        return	"vehicle"+str(self.liccense_plate_number)
+
+
+
