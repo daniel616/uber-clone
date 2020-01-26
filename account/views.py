@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 from django.contrib import messages,auth
 
+from riderequests.models import Request
+from django.template import loader
 
 # Create your views here.
 def login(request):
@@ -58,5 +60,22 @@ def logout(request):
         auth.logout(request)
         return redirect('/rides')
 
+
+def get_user(request):
+    return request.user.username
+def my_dashboard(request):
+    user = get_user(request)
+    owned_requests = Request.objects.filter(requester__exact = user)
+    provided_rides = Request.objects.filter(driver__exact = user)
+    shared_requests = Request.objects.filter(other_user_passengers__contains = user)
+    ctx = {'owned_requests':owned_requests, 'provided_rides': provided_rides,
+            'shared_requests':shared_requests}
+    template = loader.get_template('riderequests/my_dashboard.html')
+
+    return HttpResponse(template.render(ctx,request))
+
+
+
 def dashboard(request):
+    
     return render(request,'account/dashboard.html')

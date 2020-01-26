@@ -58,7 +58,7 @@ def driver_choose_requests(request):
     if request.method == "POST":
         if request.POST['choice']:
             req = Request.objects.get(pk=request.POST['choice'])
-            req.driver = "default_user"
+            req.driver = get_user(request)
             req.status = "C"
             req.save()
             return HttpResponseRedirect(reverse('riderequests:index'))
@@ -100,7 +100,7 @@ def avail_for_share(request):
         if request.POST['choice']:
             req = Request.objects.get(pk=request.POST['choice'])
             req.n_passengers += int(request.GET['n_passengers'])
-            req.other_user_passengers+="default_user"
+            req.other_user_passengers+='sd'
             req.save()
             return HttpResponseRedirect(reverse('riderequests:index'))
         else:
