@@ -7,7 +7,15 @@
 	<ul>
 	{% for req in owned_requests %}
 		{% if req.status == 'O' and req.other_user_passengers == '' %}
-		<button id = "{{ req.id }}" formaction="/riderequests/edit_request/"/>Edit</button>
+		
+		<!--<form action="/riderequests/edit_request/" method = "get" >
+     	
+			<button type="submit" id = "{{ req.id }}" >Edit</button>
+		</form> -->
+		<p>test</p>
+		<a href="/riderequests/edit_request/?id={{req.id}}">
+			<button type = "button">Edit </button>
+		</a>
 		{% endif %}
 
 		<li>{{req}}</li>
@@ -26,7 +34,7 @@
 	{% endfor %}
 	</ul>
 {% else %}
-	<p> You share no requests! </p>
+	<p> You shared no requests! </p>
 {% endif %}
 
 <h2>Provided rides</h2>

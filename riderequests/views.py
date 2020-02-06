@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
+from django.core.exceptions import ObjectDoesNotExist
 from .models import Request
 
 from .forms import RequestForm, JoinRequestForm, DriverSearchRequestForm
@@ -10,20 +11,49 @@ from django.template import loader
 from datetime import datetime
 
 def index(request):
-    all_requests = Request.objects.all()
     context = {
-            'requests' : all_requests
+            'requests' : Request.objects.all()
             }
-    template = loader.get_template('riderequests/show_requests.html')
+    return render(request,"riderequests/show_requests.html",context=context)
 
 
-    return HttpResponse(template.render(context,request))
+
+
+def error_page(request,title="Invalid input", message="Invalid input"):
+    context = {
+            "title": title,
+            "message": message
+            }
+    return render(request,"riderequests/invalid.html",context=context)
+
+
 
 def edit_requests(http_request):
-    pass
+    user = get_user(http_request)
+    if http_request.method == "POST":
+        try:
+            req = Request.objects.get(pk = http_request.POST['id'])
+            assert req.requester == user and req.status == "O"
+            form = RequestForm(http_request.POST,instance = req)
+            form.save()
+            return HttpResponseRedirect(reverse("riderequests:index"))
+
+        except (AssertionError, ObjectDoesNotExist):
+            return error_page(http_request)
+
+    else:
+        try:
+            rid = http_request.GET['id']
+            req = Request.objects.get(pk=rid)
+            assert req.requester==user and req.status=='O'
+            form = RequestForm(instance = req)
+            return render(http_request,"riderequests/make_edit.html",context = {"form":form, "id": rid})
+        except (AssertionError, ObjectDoesNotExist):
+            return error_page(http_request)
 
 def get_user(request):
     return request.user.username
+
 def my_dashboard(request):
     user = get_user(request)
     owned_requests = Request.objects.filter(requester__exact = user)
@@ -124,7 +154,7 @@ def driver_search_requests(request,prev_invalid_query=False):
 def newrequest(request):
     fields = request.POST
     t = datetime.now()
-    q = Request(requester=fields['requester'], arrive_time=datetime.now(), request_time = datetime.now(), src_loc=fields['src_loc'], dst_loc=fields['dst_loc'])
+    q = Request(requester=get_user(request), arrive_time=datetime.now(), request_time = datetime.now(), src_loc=fields['src_loc'], dst_loc=fields['dst_loc'])
     q.save()
     return HttpResponseRedirect(reverse('riderequests:index'))
 

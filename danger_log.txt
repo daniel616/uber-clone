@@ -1,0 +1,8 @@
+1/20:
+Having a secure login system is necessary to have any kind of respectable access control in the server. Otherwise, how should we know who gets to edit what data?
+
+2/1:
+Attackers don't need to use browsers/HTML to submit web requests. This means that we cannot rely on our HTML to validate user inputs. Form data received by the server is validated by ensuring that the requests modified by the forms belong to the user who owns the requests.
+
+2/5:
+Should request owners be able to edit open requests if they are sharing them with other people? I think they shouldn't, but since this is not specified in the documents I will follow instructions and allow the editing requests even when they are sharing with other users.

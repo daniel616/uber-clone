@@ -1,21 +1,20 @@
 <DOCTYPE html>
 <html>
 <head>
-	<title>Search for requests to service</title>
+	<title>Edit request</title>
 </head>
 <body>
-
 {% include "./header_links.html" %}
 
 
 	{% if invalid %}
 		<p> Invalid input!</p>
 	{% endif %}
-	<form method = "get" action = "/riderequests/give_ride/">
+	<form method = "post">
 		{% csrf_token %}
-		{{form}}
+		<input name="id" type = "hidden" value="{{id}}">
+		 {{form}} 
 		<button type = "submit">Submit </button>
 	</form>
 </body>
 </html>
-
