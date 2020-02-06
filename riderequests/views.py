@@ -16,9 +16,6 @@ def index(request):
             }
     return render(request,"riderequests/show_requests.html",context=context)
 
-
-
-
 def error_page(request,title="Invalid input", message="Invalid input"):
     context = {
             "title": title,
@@ -124,13 +121,13 @@ def avail_for_share(request):
         if JoinRequestForm(request.GET).is_valid():
             return make_form(request,False)
         else:
-            return HttpResponseRedirect(reverse('riderequests:search_shareable'))
+            return HttpResponseRedirect(reverse('riderequests:search_shareable_rides'))
 
     elif request.method == "POST":
         if request.POST['choice']:
             req = Request.objects.get(pk=request.POST['choice'])
             req.n_passengers += int(request.GET['n_passengers'])
-            req.other_user_passengers+='sd'
+            req.other_user_passengers+=get_user(request)
             req.save()
             return HttpResponseRedirect(reverse('riderequests:index'))
         else:
