@@ -55,32 +55,72 @@ def get_user(request):
     return request.user.username
 
 def my_dashboard(request):
+    
     user = get_user(request)
     user_object = User.objects.get(username = user)
-    filtered_requests = Request.objects.all()
 
-    owned_requests = [req_to_dict(obj) for obj in Request.objects.filter(requester__exact = user)]
-    provided_rides =  [req_to_dict(obj) for obj in Request.objects.filter(driver__exact = user)]
-    shared_requests =  [req_to_dict(obj) for obj in Request.objects.filter(other_user_passengers__contains = user)]
+
+    def infer_allowed_statuses(request):
+        if len(request.GET)==0:
+            try:
+                vehicle = Vehicle.objects.get(driver = user_object)
+                return {"CONFIRMED":True, "OPEN": False, "COMPLETE": False}
+            except ObjectDoesNotExist:
+                return {"OPEN":True, "CONFIRMED": True, "COMPLETE":False}
+        else:
+            ret = {}
+            for k in ['CONFIRMED','OPEN','COMPLETE']:
+                ret[k] = True if k in request.GET else False
+            return ret
+            
+            
+
+    def get_allowed_reqs(allowed):
+        ret = Request.objects.none()
+        if allowed['CONFIRMED']:
+            ret = ret|Request.objects.filter(status__exact='C')
+        if allowed['OPEN']:
+            ret = ret|Request.objects.filter(status__exact='O')
+        if allowed['COMPLETE']:
+            ret = ret|Request.objects.filter(status__exact = 'F')
+        return ret
+    allowed_statuses = infer_allowed_statuses(request)
+
+    filtered_requests= get_allowed_reqs(allowed_statuses)
+        
+    
+    owned_requests = [req_to_dict(obj) for obj in filtered_requests.filter(requester__exact = user)]
+    provided_rides =  [req_to_dict(obj) for obj in filtered_requests.filter(driver__exact = user)]
+    shared_requests =  [req_to_dict(obj) for obj in filtered_requests.filter(other_user_passengers__contains = user)]
 
     try:
         vehicle = Vehicle.objects.get(driver = user_object)
+        vehicle = vehicle_to_dict(vehicle)
     except ObjectDoesNotExist:
         vehicle = None
     
-    ctx = {'owned_requests':owned_requests, 'provided_rides': provided_rides, 'shared_requests':shared_requests, 'vehicle':vehicle}
+    ctx = {'allowed_statuses':allowed_statuses,'owned_requests':owned_requests, 'provided_rides': provided_rides, 'shared_requests':shared_requests, 'vehicle':vehicle}
     
 
     return render(request,"riderequests/my_dashboard.html", context = ctx)
 
+
 def req_to_dict(req_obj):
     tmp = copy.copy(req_obj.__dict__)
     del tmp['_state']
-    stat_map = {"C":"CONFIRMED", "O": "OPEN", "F": "FINISHED"}
+    stat_map = {"C":"CONFIRMED", "O": "OPEN", "F": "COMPLETE"}
     tmp['status'] = stat_map[tmp['status']]
     brand_map = {"L":"Lexus", "F": "Ferrari", "H":"Honda", '':''}
     tmp['vehicle_brand'] = brand_map[tmp['vehicle_brand']]
     return tmp
+
+def vehicle_to_dict(vehicle_obj):
+    tmp = copy.copy(vehicle_obj.__dict__)
+    del tmp['_state']
+    brand_map = {"L":"Lexus", "F": "Ferrari", "H":"Honda", '':''}
+    tmp['vehicle_brand'] = brand_map[tmp['vehicle_brand']]
+    return tmp
+
 
     
 

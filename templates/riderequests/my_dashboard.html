@@ -3,7 +3,7 @@
 
 
 {% if vehicle %}
-<h3>Status: Driver</h3>
+<h3>You are a driver</h3>
 <h2>Vehicle info</h2>
 <p>License plate: {{vehicle.license_plate_number}}. Brand: {{vehicle.vehicle_brand}}. Capacity: {{vehicle.max_capacity}}. Special info:{{vehicle.special_features}}.</p>
 <a href = "/riderequests/specify_vehicle"> <button >Edit info</button> </a>
@@ -12,10 +12,37 @@
 	<button type="submit">Remove driver status</button>
 </form>
 {% else %}
-<h3>Status: Passenger</h3>
+<h3>You are a passenger</h3>
 <a href = "/riderequests/specify_vehicle"> <button >Become a driver</button> </a>
 {% endif %}
 
+
+<h2>My rides</h2>
+
+<form formaction="GET">
+
+	<p> Filter by status:</p>
+
+	{% if allowed_statuses.COMPLETE %}
+	<input type = "checkbox" name = "COMPLETE" value = "True" checked> COMPLETE
+	{% else %}
+	<input type = "checkbox" name = "COMPLETE" value = "True"> COMPLETE
+	{% endif %}
+	{% if allowed_statuses.OPEN %}
+	<input type = "checkbox" name = "OPEN" value = "True" checked> OPEN
+	{% else %}
+	<input type = "checkbox" name = "OPEN" value = "True"> OPEN
+	{% endif %}
+	{% if allowed_statuses.CONFIRMED %}
+	<input type = "checkbox" name = "CONFIRMED" value = "True" checked> CONFIRMED
+	{% else %}
+	<input type = "checkbox" name = "CONFIRMED" value = "True"> CONFIRMED
+	{% endif %}
+
+
+
+	<input type = "submit">
+</form>
 
 <h2>Owned requests</h2>
 {% if owned_requests %}
