@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Request
+from .models import Request, Vehicle
 
-from .forms import RequestForm, JoinRequestForm, DriverSearchRequestForm
+from .forms import RequestForm, JoinRequestForm, DriverSearchRequestForm, VehicleForm
 
 from django.template import loader
 from datetime import datetime
@@ -53,17 +54,31 @@ def get_user(request):
 
 def my_dashboard(request):
     user = get_user(request)
+    user_object = User.objects.get(username = user)
     owned_requests = Request.objects.filter(requester__exact = user)
     provided_rides = Request.objects.filter(driver__exact = user)
     shared_requests = Request.objects.filter(other_user_passengers__contains = user)
-    ctx = {'owned_requests':owned_requests, 'provided_rides': provided_rides,
-            'shared_requests':shared_requests}
     template = loader.get_template('riderequests/my_dashboard.html')
+
+    try:
+        vehicle = Vehicle.objects.get(driver = user_object)
+    except ObjectDoesNotExist:
+        vehicle = None
+    
+    ctx = {'owned_requests':owned_requests, 'provided_rides': provided_rides, 'shared_requests':shared_requests, 'vehicle':vehicle}
+    
 
     return HttpResponse(template.render(ctx,request))
 
 
 def driver_choose_requests(request):
+    try:
+        uname = get_user(request)
+        u_obj = User.objects.get(username = uname)
+        vehicle = Vehicle.objects.get(driver = u_obj)
+    except:
+        return HttpResponseRedirect(reverse('account:login'))
+    
     def make_form(request,prev_invalid_post):
         matches = Request.objects.filter(status__exact = 'O')
         if request.GET['src_loc']:
@@ -74,6 +89,11 @@ def driver_choose_requests(request):
             matches = matches.filter(arrive_time__gte = request.GET['min_arrive_time'])
         if request.GET['max_arrive_time']:
             matches = matches.filter(arrive_time__lte = request.GET['max_arrive_time'])
+        
+        matches = matches.filter(vehicle_brand__exact = '') | matches.filter(vehicle_brand__exact = vehicle.vehicle_brand)
+        matches = matches.filter(special_features__exact = '') | matches.filter(special_features__exact = vehicle.special_features)
+        
+
         ctx = {
                 'requests': matches,
                 'invalid' : prev_invalid_post,
@@ -88,7 +108,7 @@ def driver_choose_requests(request):
             req.driver = get_user(request)
             req.status = "C"
             req.save()
-            return HttpResponseRedirect(reverse('riderequests:index'))
+            return HttpResponseRedirect(reverse('riderequests:my_dashboard'))
         else:
             return make_form(request,True)
 
@@ -136,17 +156,15 @@ def avail_for_share(request):
         raise AssertionError('unrecognized method')
 
 def search_shareable_rides(request):
-    def produce_form(request,prev_invalid):
-        context = {"invalid": prev_invalid, "form": JoinRequestForm()}
-        template = loader.get_template('riderequests/search_shareable.html')
-        return HttpResponse(template.render(context,request))
+    context = {"form": JoinRequestForm()}
+    return render(request,'riderequests/search_shareable.html',context = context)
     
-    return produce_form(request,False)
+
+    
 
 def driver_search_requests(request,prev_invalid_query=False):
-    template = loader.get_template('riderequests/driver_search_req.html')
     ctx = {"form":DriverSearchRequestForm(), "invalid": prev_invalid_query}
-    return HttpResponse(template.render(ctx,request))
+    return render(request,'riderequests/driver_search_req.html', context = ctx)
 
 def newrequest(request):
     fields = request.POST
@@ -155,6 +173,42 @@ def newrequest(request):
     q.save()
     return HttpResponseRedirect(reverse('riderequests:index'))
 
+def specify_vehicle(request):
+    user = get_user(request)
+
+    user_object = User.objects.get(username = user)
+
+    def get_v_form(u_obj):
+        try:
+            vehicle = Vehicle.objects.get(driver = user_object)
+            form = VehicleForm( instance = vehicle)
+        except ObjectDoesNotExist:
+            form = VehicleForm()
+        return form
+
+    if request.method == "POST":
+        try:
+            vehicle = Vehicle.objects.get(driver = user_object)
+            form = VehicleForm(request.POST, instance = vehicle)
+        except ObjectDoesNotExist:
+            form = VehicleForm(request.POST)
+        
+        
+        if form.is_valid():
+            vehicle = form.save(commit = False)
+            vehicle.driver = user_object
+            vehicle.save()
+            return HttpResponseRedirect(reverse('riderequests:my_dashboard'))
+
+        else:
+            context = {"form":form, 'title':'Specify vehicle', 'invalid':True}
+            return render(request,'riderequests/default_form.html', context = context)
+    else:
+        form = get_v_form(user_object)
+        return render(request, 'riderequests/default_form.html', context = {"form":form, 'title':
+            'Specify vehicle'})
+
+    
 
 #http://blog.appliedinformaticsinc.com/using-django-modelform-a-quick-guide/
 def specifyrequest(request):

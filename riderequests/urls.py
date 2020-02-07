@@ -14,4 +14,5 @@ urlpatterns = [
         path('give_ride/',views.driver_choose_requests, name = 'driver_choose_requests'),
         path('my_dashboard/', views.my_dashboard, name = 'my_dashboard'),
         path('edit_request/', views.edit_requests, name = 'edit_request'),
+        path('specify_vehicle/', views.specify_vehicle, name = "specify_vehicle"),
 ]

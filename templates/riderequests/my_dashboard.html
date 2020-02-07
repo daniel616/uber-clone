@@ -1,6 +1,18 @@
 {% include "./header_links.html" %}
 <!--owned_requests provided_rides shared_requests-->
 
+{% if vehicle %}
+
+	<h2>Vehicle info</h2>
+	<p>{{vehicle}}</p>
+	<a href = "/riderequests/specify_vehicle"> <button >Edit info</button> </a>
+
+{% else %}
+	<p>You are not a driver.</p>
+	<a href = "/riderequests/specify_vehicle"> <button >Become a driver</button> </a>
+{% endif %}
+
+
 <h2>Owned requests</h2>
 {% if owned_requests %}
 	
@@ -8,11 +20,6 @@
 	{% for req in owned_requests %}
 		{% if req.status == 'O' and req.other_user_passengers == '' %}
 		
-		<!--<form action="/riderequests/edit_request/" method = "get" >
-     	
-			<button type="submit" id = "{{ req.id }}" >Edit</button>
-		</form> -->
-		<p>test</p>
 		<a href="/riderequests/edit_request/?id={{req.id}}">
 			<button type = "button">Edit </button>
 		</a>

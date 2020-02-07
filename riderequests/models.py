@@ -1,6 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import User
 import copy
 from datetime import datetime
+
+
+HONDA = 'H'
+FERRARI = 'F'
+LEXUS = 'L'
+BRANDS = (
+            (HONDA, 'honda'),
+            (FERRARI, 'ferrari'),
+            (LEXUS, 'lexus'),
+)
 
 class Request(models.Model):
     OPEN = 'O'
@@ -29,6 +40,11 @@ class Request(models.Model):
     src_loc = models.CharField(max_length = 500)
     dst_loc = models.CharField(max_length = 500)
 
+    vehicle_brand = models.CharField(max_length = 2, choices = BRANDS, default = '', blank = True)
+    special_features = models.CharField(max_length=200, blank=True)
+
+
+
     def __str__(self):
         tmp = copy.copy(self.__dict__)
         del tmp['_state']
@@ -36,13 +52,21 @@ class Request(models.Model):
 # Create your models here.
 
 class Vehicle(models.Model):
-    vehicle_type_registered = models.CharField(max_length=200, blank=True)
-    license_plate_number = models.CharField(max_length=200, blank=True)
-    max_capacity = models.IntegerField(default=4, blank=True)
-   # driver = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    special_requests_driver = models.CharField(max_length=200, blank=True)
-    def	__str__(self):
-        return	"vehicle"+str(self.liccense_plate_number)
+    
+
+    vehicle_brand = models.CharField(max_length = 2, choices = BRANDS, default = HONDA)
+    license_plate_number = models.CharField(max_length=200)
+    max_capacity = models.IntegerField(default=4)
+    driver = models.OneToOneField(User,on_delete = models.CASCADE, null=True)
+    special_features = models.CharField(max_length=200, blank=True)
+ 
+    def __str__(self):
+        tmp = copy.copy(self.__dict__)
+        del tmp['_state']
+        return str(tmp)   
+    
+    #def	__str__(self):
+    #    return	"vehicle"+str(self.license_plate_number)
 
 
 
