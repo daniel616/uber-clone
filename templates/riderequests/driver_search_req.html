@@ -11,6 +11,7 @@
 	{% if invalid %}
 		<p> Invalid input!</p>
 	{% endif %}
+	<h2>Search for requests to service </h2>
 	<form method = "get" action = "/riderequests/give_ride/">
 		{% csrf_token %}
 		{{form}}

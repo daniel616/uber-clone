@@ -42,7 +42,7 @@ class Request(models.Model):
 
     vehicle_brand = models.CharField(max_length = 2, choices = BRANDS, default = '', blank = True)
     special_features = models.CharField(max_length=200, blank=True)
-
+    license_plate = models.CharField(max_length = 200)
 
 
     def __str__(self):

@@ -10,6 +10,7 @@
 	{% if invalid %}
 		<p> Invalid input!</p>
 	{% endif %}
+	<h2>Make a new request</h2>
 	<form method = "post">
 		{% csrf_token %}
 		{{form}}
