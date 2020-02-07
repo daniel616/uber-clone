@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-
+from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from .models import Request, Vehicle
 
 from .forms import RequestForm, JoinRequestForm, DriverSearchRequestForm, VehicleForm
@@ -107,6 +108,7 @@ def driver_choose_requests(request):
             req = Request.objects.get(pk=request.POST['choice'])
             req.driver = get_user(request)
             req.status = "C"
+            notify_all_confirmed(req)
             req.save()
             return HttpResponseRedirect(reverse('riderequests:my_dashboard'))
         else:
@@ -117,6 +119,18 @@ def driver_choose_requests(request):
         return make_form(request,False)
     else:
         return driver_search_requests(request,True)
+
+def notify_all_confirmed(c_req_obj):
+    rider_unames = [c_req_obj.requester]
+    rider_unames += c_req_obj.other_user_passengers.split(", ")
+    rider_unames = filter(lambda x: x!='', rider_unames)
+    rider_emails = [User.objects.get(username = u).email for u in rider_unames]
+
+    driver_email = [User.objects.get(username = c_req_obj.driver).email]
+
+    send_mail('Your ride has been confirmed', f'Hi! This is just to let you know that your ride info has been confirmed. Details below: {c_req_obj}',settings.EMAIL_HOST_USER, rider_emails)
+    send_mail('You are giving a ride!', f'Hi! You have confirmed a ride request. Details below:{c_req_obj}', settings.EMAIL_HOST_USER, driver_email)
+
 
 
 def avail_for_share(request): 
@@ -147,7 +161,7 @@ def avail_for_share(request):
         if request.POST['choice']:
             req = Request.objects.get(pk=request.POST['choice'])
             req.n_passengers += int(request.GET['n_passengers'])
-            req.other_user_passengers+=get_user(request)
+            req.other_user_passengers+= f',{get_user(request)}'
             req.save()
             return HttpResponseRedirect(reverse('riderequests:index'))
         else:
