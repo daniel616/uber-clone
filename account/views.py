@@ -58,7 +58,7 @@ def register(request):
 def logout(request):
     if request.method == 'POST':
         auth.logout(request)
-        return redirect('/rides')
+        return redirect('/index')
 
 
 def get_user(request):
