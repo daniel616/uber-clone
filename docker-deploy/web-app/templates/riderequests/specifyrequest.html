@@ -1,0 +1,20 @@
+<DOCTYPE html>
+<html>
+<head>
+	<title>Specify Request</title>
+</head>
+<body>
+{% include "./header_links.html" %}
+
+
+	{% if invalid %}
+		<p> Invalid input!</p>
+	{% endif %}
+	<h2>Make a new request</h2>
+	<form method = "post">
+		{% csrf_token %}
+		{{form}}
+		<button type = "submit">Submit </button>
+	</form>
+</body>
+</html>

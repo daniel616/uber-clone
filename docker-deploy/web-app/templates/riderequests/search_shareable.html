@@ -1,0 +1,22 @@
+<DOCTYPE html>
+<html>
+<head>
+	<title>Search for rides to share</title>
+</head>
+<body>
+
+{% include "./header_links.html" %}
+
+
+	{% if invalid %}
+		<p> Invalid input!</p>
+	{% endif %}
+	<h2>Find a request to share</h2>
+	<form method = "get" action = "/riderequests/joinrequest/">
+		{% csrf_token %}
+		{{form}}
+		<button type = "submit">Submit </button>
+	</form>
+</body>
+</html>
+
