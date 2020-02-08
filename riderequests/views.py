@@ -4,11 +4,12 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 from django.conf import settings
+from django.urls import reverse
 from .models import Request, Vehicle
 
 from .forms import RequestForm, JoinRequestForm, DriverSearchRequestForm, VehicleForm
-
 from django.template import loader
 from datetime import datetime
 import copy
@@ -29,7 +30,13 @@ def error_page(request,title="Invalid input", message="Invalid input"):
 
 
 def edit_requests(http_request):
-    user = get_user(http_request)
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
+
     if http_request.method == "POST":
         try:
             req = Request.objects.get(pk = http_request.POST['id'])
@@ -55,9 +62,13 @@ def get_user(request):
     return request.user.username
 
 def my_dashboard(request):
-    
-    user = get_user(request)
-    user_object = User.objects.get(username = user)
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
+
 
 
     def infer_allowed_statuses(request):
@@ -126,6 +137,13 @@ def vehicle_to_dict(vehicle_obj):
 
 def remove_driver(request):
     try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
+
+    try:
         uname = get_user(request)
         assert request.method == "POST"
         vehicle = Vehicle.objects.get(driver = User.objects.get(username = uname))
@@ -136,11 +154,17 @@ def remove_driver(request):
 
 
 def finish_ride(request):
-    uname = get_user(request)
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
+
     try:
         rid = request.POST['id']
         req = Request.objects.get(pk=rid)
-        assert uname == req.driver
+        assert user == req.driver
 
         req.status = 'F'
         req.save()
@@ -156,7 +180,7 @@ def driver_choose_requests(request):
         u_obj = User.objects.get(username = uname)
         vehicle = Vehicle.objects.get(driver = u_obj)
     except:
-        return HttpResponseRedirect(reverse('account:login'))
+        return HttpResponseRedirect(reverse('login'))
     
     def make_form(request,prev_invalid_post):
         matches = Request.objects.filter(status__exact = 'O')
@@ -212,7 +236,14 @@ def notify_all_confirmed(c_req_obj):
 
 
 
-def avail_for_share(request): 
+def avail_for_share(request):
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
+
     def make_form(request, prev_invalid_post):
         matches = Request.objects.filter(status__exact='O')
         matches = matches.filter(src_loc__exact=request.GET['src_loc'])
@@ -228,6 +259,7 @@ def avail_for_share(request):
         template = loader.get_template('riderequests/join_requests.html')
 
         return HttpResponse(template.render(context,request))
+
 
 
     if request.method == "GET":
@@ -249,6 +281,12 @@ def avail_for_share(request):
         raise AssertionError('unrecognized method')
 
 def search_shareable_rides(request):
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
     context = {"form": JoinRequestForm()}
     return render(request,'riderequests/search_shareable.html',context = context)
     
@@ -256,20 +294,39 @@ def search_shareable_rides(request):
     
 
 def driver_search_requests(request,prev_invalid_query=False):
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
     ctx = {"form":DriverSearchRequestForm(), "invalid": prev_invalid_query}
     return render(request,'riderequests/driver_search_req.html', context = ctx)
 
 def newrequest(request):
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
     fields = request.POST
-    t = datetime.now()
     q = Request(requester=get_user(request), arrive_time=datetime.now(), request_time = datetime.now(), src_loc=fields['src_loc'], dst_loc=fields['dst_loc'])
     q.save()
     return HttpResponseRedirect(reverse('riderequests:my_dashboard'))
 
 def specify_vehicle(request):
-    user = get_user(request)
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
 
-    user_object = User.objects.get(username = user)
+
+
+
+
 
     def get_v_form(u_obj):
         try:
@@ -305,6 +362,13 @@ def specify_vehicle(request):
 
 #http://blog.appliedinformaticsinc.com/using-django-modelform-a-quick-guide/
 def specifyrequest(request):
+    try:
+        user = get_user(request)
+        user_object = User.objects.get(username = user)
+    except ObjectDoesNotExist:
+        messages.error(request,"login first!")
+        return HttpResponseRedirect(reverse("login"))
+
     if request.method == "POST":
         form = RequestForm(request.POST)
         if form.is_valid():
