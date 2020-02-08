@@ -1,5 +1,6 @@
-{% include "./header_links.html" %}
-<!--owned_requests provided_rides shared_requests-->
+{% extends 'base.html' %}
+{% block content %}
+
 
 
 {% if vehicle %}
@@ -50,7 +51,7 @@
 <ul>
 	{% for req in owned_requests %}
 	<li>
-		<p>Status: {{req.status}}. Requester: {{req.requester}}. From: {{req.src_loc}}, To: {{req.dst_loc}}. Sharers: {{req.other_user_passengers}}. Driver:{{req.driver}}, Arrival time: {{req.request_time}}</p>
+		<p>Status: {{req.status}}. Requester: {{req.requester}}. From: {{req.src_loc}}, To: {{req.dst_loc}}. Sharers: {{req.other_user_passengers}}. Driver:{{req.driver}}. Arrival time: {{req.arrive_time}}. Request time: {{req.request_time}}</p>
 		<button onclick = "toggleShow('owned_req_details_{{forloop.counter}}')"> Display further details </button>
 		<p id = "owned_req_details_{{forloop.counter}}" style="display:none">License plate: {{req.license_plate}}, Vehicle brand: {{req.vehicle_brand}}, Passengers: {{req.n_passengers}}, Special requests: {{req.special_features}}</p>
 
@@ -79,7 +80,7 @@
 <ul>
 	{% for req in shared_requests %}
 	<li>
-		<p>Status: {{req.status}}. Requester: {{req.requester}}. From: {{req.src_loc}}, To: {{req.dst_loc}}. Sharers: {{req.other_user_passengers}}. Driver:{{req.driver}}, Arrival time: {{req.request_time}}</p>
+		<p>Status: {{req.status}}. Requester: {{req.requester}}. From: {{req.src_loc}}, To: {{req.dst_loc}}. Sharers: {{req.other_user_passengers}}. Driver:{{req.driver}}, Arrival time: {{req.arrive_time}}, Request time: {{req.request_time}}</p>
 		<button onclick = "toggleShow('shared_ride_details_{{forloop.counter}}')"> Display further details </button>
 		<p id = "shared_ride_details_{{forloop.counter}}" style="display:none">License plate: {{req.license_plate}}, Vehicle brand: {{req.vehicle_brand}}, Passengers: {{req.n_passengers}}, Special requests: {{req.special_features}}</p>
 	</li>
@@ -96,7 +97,7 @@
 	{% for req in provided_rides %}
 	<li>
 
-		<p>Status: {{req.status}}. Requester: {{req.requester}}. From: {{req.src_loc}}, To: {{req.dst_loc}}. Sharers: {{req.other_user_passengers}}. Driver:{{req.driver}}, Arrival time: {{req.request_time}}</p>
+		<p>Status: {{req.status}}. Requester: {{req.requester}}. From: {{req.src_loc}}, To: {{req.dst_loc}}. Sharers: {{req.other_user_passengers}}. Driver:{{req.driver}}, Arrival time: {{req.arrive_time}}, Request time: {{req.request_time}}</p>
 		<button onclick = "toggleShow('provided_ride_details_{{forloop.counter}}')"> Display further details </button>
 		<p id = "provided_ride_details_{{forloop.counter}}" style="display:none">License plate: {{req.license_plate}}, Vehicle brand: {{req.vehicle_brand}}, Passengers: {{req.n_passengers}}, Special requests: {{req.special_features}}</p>
 
@@ -115,9 +116,6 @@
 <p> You are not giving any rides </p>
 {% endif %}
 
-
-
-
 <script>
 	function toggleShow(elementID) {
 		var x = document.getElementById(elementID);
@@ -129,3 +127,7 @@
 		}
 	}
 </script>
+
+
+{% endblock %}
+

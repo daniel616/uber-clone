@@ -30,8 +30,9 @@ def error_page(request,title="Invalid input", message="Invalid input"):
 
 
 def edit_requests(http_request):
+
     try:
-        user = get_user(request)
+        user = get_user(http_request)
         user_object = User.objects.get(username = user)
     except ObjectDoesNotExist:
         messages.error(request,"login first!")
@@ -210,7 +211,7 @@ def driver_choose_requests(request):
             req = Request.objects.get(pk=request.POST['choice'])
             req.driver = get_user(request)
             req.status = "C"
-            req.license_plate = vehicle.license_plate
+            req.license_plate = vehicle.license_plate_number
             notify_all_confirmed(req)
             req.save()
             return HttpResponseRedirect(reverse('riderequests:my_dashboard'))
@@ -225,7 +226,7 @@ def driver_choose_requests(request):
 
 def notify_all_confirmed(c_req_obj):
     rider_unames = [c_req_obj.requester]
-    rider_unames += c_req_obj.other_user_passengers.split(", ")
+    rider_unames += c_req_obj.other_user_passengers.split(",")
     rider_unames = filter(lambda x: x!='', rider_unames)
     rider_emails = [User.objects.get(username = u).email for u in rider_unames]
 
@@ -375,7 +376,7 @@ def specifyrequest(request):
             n_req = form.save(commit = False)
             
             n_req.requester = get_user(request)
-            n_req.request_time = datetime.now()
+            #n_req.request_time = datetime.now()
             n_req.save()
             return HttpResponseRedirect(reverse('riderequests:my_dashboard'))
         else:

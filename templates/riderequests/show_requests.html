@@ -1,5 +1,6 @@
-{% include "./header_links.html" %}
 
+{% extends 'base.html' %}
+{% block content %}
 {% if requests %}
 	<ul>
 	{% for req in requests %}
@@ -9,3 +10,5 @@
 {% else %}
 	<p> no requests! </p>
 {% endif %}
+
+{% endblock %}

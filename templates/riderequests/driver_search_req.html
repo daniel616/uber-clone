@@ -1,12 +1,5 @@
-<DOCTYPE html>
-<html>
-<head>
-	<title>Search for requests to service</title>
-</head>
-<body>
-
-{% include "./header_links.html" %}
-
+{% extends 'base.html' %}
+{% block content %}
 
 	{% if invalid %}
 		<p> Invalid input!</p>
@@ -17,6 +10,5 @@
 		{{form}}
 		<button type = "submit">Submit </button>
 	</form>
-</body>
-</html>
 
+{% endblock %}

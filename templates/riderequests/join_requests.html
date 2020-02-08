@@ -1,5 +1,5 @@
-{% include "./header_links.html" %}
-
+{% extends 'base.html' %}
+{% block content %}
 
 {% if requests %}
 <form method = "post">
@@ -13,3 +13,5 @@
 {% else %}
 <p> no requests to join! </p>
 {% endif %}
+
+{%endblock%}

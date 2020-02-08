@@ -31,6 +31,11 @@
 		<ul class="nav navbar-nav navbar-right">
 		  {% if user.is_authenticated %}
 		  <li><a>Signed In As <em>{{user.username}}</em></a></li>
+<li><a href="/riderequests/my_dashboard">my dashboard</a></li>
+		     <li><a href = "/riderequests/specifyrequest/">make new request</a></li>
+		     <li><a href = "/riderequests/search_shareable_rides/">join an existing request</a></li>
+	     	<li><a href = "/riderequests/driver_search_requests/">give someone a ride</a></li>
+
                   <li class="nav-item mr-3">
 		    <a href="javascript:{document.getElementById('logout').submit()}" class="nav-link">
 		      <i class="fas fa-sign-out-alt"></i>Logout
@@ -42,8 +47,8 @@
                     </li>
 		  {% else %}
 		     <li><a href="{% url 'login' %}">Login</a></li>
-                     <li><a href="{% url 'register' %}">Sign Up</a></li>                  
-		  {% endif %}
+                     <li><a href="{% url 'register' %}">Sign Up</a></li>                 
+		   		     {% endif %}
 		 
                 </ul>
 		 
@@ -53,8 +58,8 @@
 	    </div>
 	  </nav>
 	  
-	</div class="container"
+	  <!--</div class="container" -->
               {% block content %} {% endblock %}
-	</div>
+	      <!--</div> -->
     </body>
 </html>

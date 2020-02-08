@@ -1,12 +1,6 @@
-<DOCTYPE html>
-<html>
-<head>
-	<title>{{title}}</title>
-</head>
-<body>
-{% include "./header_links.html" %}
 
-
+{% extends 'base.html' %}
+{% block content %}
 	{% if invalid %}
 		<p> Invalid input!</p>
 	{% endif %}
@@ -15,5 +9,5 @@
 		{{form}}
 		<button type = "submit">Submit </button>
 	</form>
-</body>
-</html>
+
+{% endblock %}

@@ -1,13 +1,5 @@
-<DOCTYPE html>
-<html>
-<head>
-	<title>{{title}}</title>
-</head>
-<body>
-
-{% include "./header_links.html" %}
-
+{% extends 'base.html' %}
+{% block content %}
 	{{message}}
-</body>
-</html>
 
+	{%endblock%}

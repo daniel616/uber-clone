@@ -1,11 +1,5 @@
-<DOCTYPE html>
-<html>
-<head>
-	<title>Edit request</title>
-</head>
-<body>
-{% include "./header_links.html" %}
-
+{% extends 'base.html' %}
+{% block content %}
 
 	{% if invalid %}
 		<p> Invalid input!</p>
@@ -14,7 +8,8 @@
 		{% csrf_token %}
 		<input name="id" type = "hidden" value="{{id}}">
 		 {{form}} 
-		<button type = "submit">Submit </button>
+		<button type="submit" >Mark Complete</button>
+
 	</form>
-</body>
-</html>
+
+{%endblock %}

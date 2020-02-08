@@ -6,3 +6,9 @@ Attackers don't need to use browsers/HTML to submit web requests. This means tha
 
 2/5:
 Should request owners be able to edit open requests if they are sharing them with other people? I think they shouldn't, but since this is not specified in the documents I will follow instructions and allow the editing requests even when they are sharing with other users.
+
+2/6: 
+If someone attempts to view their dashboard or make a request (or anything else really), we should redirect them to the login page. You should not be able to do anything without being logged in first.
+
+2/6:
+We need to have systems in place to return error messages in the event of invalid user input
