@@ -4,5 +4,3 @@ from django.http import HttpResponse
 def index(request):
    # return HttpResponse("heh")
     return render(request,'page/index.html')
-def rides(request):
-    return render(request,'page/all_rides.html')

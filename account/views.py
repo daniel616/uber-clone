@@ -16,7 +16,7 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             messages.success(request, 'Login successful!')
-            return redirect('dashboard')
+            return redirect('my_dashboard')
         else:
             messages.error(request, 'Invalid credentials')
             return redirect('login')
@@ -58,7 +58,7 @@ def register(request):
 def logout(request):
     if request.method == 'POST':
         auth.logout(request)
-        return redirect('/index')
+        return redirect('/')
 
 
 def get_user(request):
@@ -76,6 +76,5 @@ def my_dashboard(request):
 
 
 
-def dashboard(request):
-    
-    return render(request,'account/dashboard.html')
+#def dashboard(request): 
+ #   return redirect(request,'riderequests/my_dashboard')
